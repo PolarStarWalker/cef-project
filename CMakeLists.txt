@@ -152,14 +152,11 @@ add_subdirectory(${CEF_ROOT}/tests/ceftests)
 # Allow includes relative to the current source directory.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-# Configure building of the examples.
-option(WITH_EXAMPLES "Enable or disable building of examples." ON)
-if(WITH_EXAMPLES)
-  # Include example application targets.
-  add_subdirectory(examples)
-endif()
+set(VCPKG_TARGET_TRIPLET "x64-windows-static")
+set(VCPKG_BUILD_TYPE ${CMAKE_BUILD_TYPE})
+include("${CMAKE_CURRENT_LIST_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
 
-# TODO: Include other application targets here.
+add_subdirectory(src)
 
 # Display configuration settings.
 PRINT_CEF_CONFIG()

@@ -1,0 +1,25 @@
+{
+  "name": "client",
+  "version-string": "1.0.0",
+  "builtin-baseline": "4efb7ed628be5e56eeee009524e6ca7f3cc49c74",
+  "dependencies": [
+
+    {
+      "name": "glfw3",
+      "version>=": "3.4"
+    },
+    {
+      "name": "glew",
+      "version>=": "2.2.0"
+    },
+    {
+      "name": "imgui",
+      "version>=": "1.90.2",
+      "features": [
+        "docking-experimental",
+        "opengl3-binding",
+        "glfw-binding"
+      ]
+    }
+  ]
+}
