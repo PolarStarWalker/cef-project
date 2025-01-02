@@ -16,7 +16,7 @@ RootWindowConfig::RootWindowConfig(CefRefPtr<CefCommandLine> cmd)
       use_views(MainContext::Get()->UseViewsGlobal()),
       use_alloy_style(MainContext::Get()->UseAlloyStyleGlobal()),
       with_controls(!command_line->HasSwitch(switches::kHideControls)),
-      url(MainContext::Get()->GetMainURL(command_line)) {}
+      url(MainContext::Get()->GetMainURL()) {}
 
 RootWindow::RootWindow(bool use_alloy_style)
     : use_alloy_style_(use_alloy_style) {}

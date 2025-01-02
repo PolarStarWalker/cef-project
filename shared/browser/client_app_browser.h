@@ -50,7 +50,7 @@ class ClientAppBrowser : public ClientApp, public CefBrowserProcessHandler {
 
   // Called to populate |settings| based on |command_line| and other global
   // state.
-  static CefSettings PopulateSettings(CefRefPtr<CefCommandLine> command_line);
+  static CefSettings PopulateSettings();
 
  private:
   // Registers cookieable schemes. Implemented by cefclient in

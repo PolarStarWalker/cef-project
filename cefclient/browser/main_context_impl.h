@@ -27,7 +27,7 @@ class MainContextImpl : public MainContext {
   std::string GetConsoleLogPath() override;
   std::string GetDownloadPath(const std::string& file_name) override;
   std::string GetAppWorkingDirectory() override;
-  std::string GetMainURL(CefRefPtr<CefCommandLine> command_line) override;
+  std::string GetMainURL() override;
   cef_color_t GetBackgroundColor() override;
   bool UseViewsGlobal() override;
   bool UseAlloyStyleGlobal() override;

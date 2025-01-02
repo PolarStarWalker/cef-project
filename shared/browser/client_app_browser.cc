@@ -16,19 +16,14 @@ ClientAppBrowser::ClientAppBrowser() {
 }
 
 // static
-CefSettings ClientAppBrowser::PopulateSettings(
-    CefRefPtr<CefCommandLine> command_line) {
+CefSettings ClientAppBrowser::PopulateSettings() {
   CefSettings settings;
 
 #if (defined(OS_WIN) || defined(OS_LINUX))
-  settings.multi_threaded_message_loop =
-      command_line->HasSwitch(client::switches::kMultiThreadedMessageLoop);
+  settings.multi_threaded_message_loop = false;
 #endif
 
-  if (!settings.multi_threaded_message_loop) {
-    settings.external_message_pump =
-        command_line->HasSwitch(client::switches::kExternalMessagePump);
-  }
+    settings.external_message_pump = true;
 
   std::vector<std::string> cookieable_schemes;
   RegisterCookieableSchemes(cookieable_schemes);

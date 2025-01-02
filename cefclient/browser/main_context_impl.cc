@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <memory>
 
-#include "include/cef_parser.h"
 #include "cefclient/browser/test_runner.h"
+#include "include/cef_parser.h"
 #include "shared/browser/client_app_browser.h"
 #include "shared/common/client_switches.h"
 #include "shared/common/string_util.h"
@@ -18,7 +18,7 @@ namespace client {
 namespace {
 
 // The default URL to load in a browser window.
-const char kDefaultUrl[] = "https://polaruv.tech";
+constexpr std::string_view kDefaultUrl = "https://polaruv.tech";
 
 // Returns the ARGB value for |color|.
 cef_color_t ParseColor(const std::string& color) {
@@ -41,52 +41,28 @@ cef_color_t ParseColor(const std::string& color) {
 
 }  // namespace
 
-MainContextImpl::MainContextImpl(CefRefPtr<CefCommandLine> command_line,
-                                 bool terminate_when_all_windows_closed)
-    : command_line_(command_line),
-      terminate_when_all_windows_closed_(terminate_when_all_windows_closed) {
+MainContextImpl::MainContextImpl(CefRefPtr<CefCommandLine> command_line, bool terminate_when_all_windows_closed)
+    : command_line_(command_line), terminate_when_all_windows_closed_(terminate_when_all_windows_closed) {
   DCHECK(command_line_.get());
 
   // Whether windowless (off-screen) rendering will be used.
-  use_windowless_rendering_ =
-      command_line_->HasSwitch(switches::kOffScreenRenderingEnabled);
+  use_windowless_rendering_ = true;
 
-  if (use_windowless_rendering_ &&
-      command_line_->HasSwitch(switches::kOffScreenFrameRate)) {
-    windowless_frame_rate_ =
-        atoi(command_line_->GetSwitchValue(switches::kOffScreenFrameRate)
-                 .ToString()
-                 .c_str());
-  }
+  shared_texture_enabled_ = true;
 
-  // Whether transparent painting is used with windowless rendering.
-  const bool use_transparent_painting =
-      use_windowless_rendering_ &&
-      command_line_->HasSwitch(switches::kTransparentPaintingEnabled);
-
-  shared_texture_enabled_ =
-      use_windowless_rendering_ &&
-      command_line_->HasSwitch(switches::kSharedTextureEnabled);
-
-  external_begin_frame_enabled_ =
-      use_windowless_rendering_ &&
-      command_line_->HasSwitch(switches::kExternalBeginFrameEnabled);
-
-  if (windowless_frame_rate_ <= 0) {
-    windowless_frame_rate_ = shared_texture_enabled_ ? 60 : 30;
-  }
+  external_begin_frame_enabled_ = false;
+  windowless_frame_rate_ = 60;
 
   // Whether the Views framework will be used.
-  use_views_ = command_line_->HasSwitch(switches::kUseViews);
+  use_views_ = false;
 
   if (use_windowless_rendering_ && use_views_) {
-    LOG(ERROR)
-        << "Windowless rendering is not supported by the Views framework.";
+    LOG(ERROR) << "Windowless rendering is not supported by the Views framework.";
     use_views_ = false;
   }
 
   // Whether Alloy style will be used.
-  use_alloy_style_ = command_line_->HasSwitch(switches::kUseAlloyStyle);
+  use_alloy_style_ = true;
 
   if (use_windowless_rendering_ && !use_alloy_style_) {
     LOG(WARNING) << "Windowless rendering requires Alloy style.";
@@ -94,8 +70,7 @@ MainContextImpl::MainContextImpl(CefRefPtr<CefCommandLine> command_line,
   }
 
   // Whether to use a native parent window.
-  const bool use_chrome_native_parent =
-      command_line->HasSwitch(switches::kUseNative);
+  static constexpr bool use_chrome_native_parent = false;
 
 #if defined(OS_MAC)
   if (use_chrome_native_parent && !use_alloy_style_) {
@@ -110,27 +85,12 @@ MainContextImpl::MainContextImpl(CefRefPtr<CefCommandLine> command_line,
     use_views_ = true;
   }
 
-  if (command_line_->HasSwitch(switches::kBackgroundColor)) {
-    // Parse the background color value.
-    background_color_ =
-        ParseColor(command_line_->GetSwitchValue(switches::kBackgroundColor));
-  }
-
-  if (background_color_ == 0 && !use_views_) {
-    // Set an explicit background color.
-    background_color_ = CefColorSetARGB(255, 255, 255, 255);
-  }
-
-  // |browser_background_color_| should remain 0 to enable transparent painting.
-  if (!use_transparent_painting) {
-    browser_background_color_ = background_color_;
-  }
+  background_color_ = CefColorSetARGB(255, 255, 255, 255);
+  browser_background_color_ = background_color_;
 
   // Log the current configuration.
-  LOG(WARNING) << "Using " << (use_alloy_style_ ? "Alloy" : "Chrome")
-               << " style; " << (use_views_ ? "Views" : "Native")
-               << "-hosted window; "
-               << (use_windowless_rendering_ ? "Windowless" : "Windowed")
+  LOG(WARNING) << "Using " << (use_alloy_style_ ? "Alloy" : "Chrome") << " style; " << (use_views_ ? "Views" : "Native")
+               << "-hosted window; " << (use_windowless_rendering_ ? "Windowless" : "Windowed")
                << " rendering (not a warning)";
 }
 
@@ -148,20 +108,8 @@ std::string MainContextImpl::GetConsoleLogPath() {
   return GetAppWorkingDirectory() + "console.log";
 }
 
-std::string MainContextImpl::GetMainURL(
-    CefRefPtr<CefCommandLine> command_line) {
-  if (!command_line) {
-    command_line = command_line_;
-  }
-
-  std::string main_url = kDefaultUrl;
-  if (command_line->HasSwitch(switches::kUrl)) {
-    main_url = command_line->GetSwitchValue(switches::kUrl);
-  } else if (use_views_ && command_line->HasSwitch(switches::kHideFrame)) {
-    // Use the draggable regions test as the default URL for frameless windows.
-    main_url = test_runner::GetTestURL("draggable");
-  }
-  return main_url;
+std::string MainContextImpl::GetMainURL() {
+  return std::string{kDefaultUrl};
 }
 
 cef_color_t MainContextImpl::GetBackgroundColor() {
@@ -177,19 +125,15 @@ bool MainContextImpl::UseAlloyStyleGlobal() {
 }
 
 bool MainContextImpl::TouchEventsEnabled() {
-  return command_line_->GetSwitchValue("touch-events") == "enabled";
+  return false;
 }
 
 bool MainContextImpl::UseDefaultPopup() {
-  return !use_windowless_rendering_ &&
-         command_line_->HasSwitch(switches::kUseDefaultPopup);
+  return false;
 }
 
 CefSettings MainContextImpl::PopulateSettings() {
-  CefSettings settings = ClientAppBrowser::PopulateSettings(command_line_);
-
-  CefString(&settings.cache_path) =
-      command_line_->GetSwitchValue(switches::kCachePath);
+  CefSettings settings = ClientAppBrowser::PopulateSettings();
 
   if (use_windowless_rendering_) {
     settings.windowless_rendering_enabled = true;
@@ -199,28 +143,6 @@ CefSettings MainContextImpl::PopulateSettings() {
     settings.background_color = browser_background_color_;
   }
 
-  if (command_line_->HasSwitch("lang")) {
-    // Use the same locale for the Accept-Language HTTP request header.
-    CefString(&settings.accept_language_list) =
-        command_line_->GetSwitchValue("lang");
-  }
-
-  if (command_line_->HasSwitch("enable-chrome-policy")) {
-    // Enable Chrome policy management via Platform and OS-user policies.
-    // Use the same configuration ID as Google Chrome for testing purposes.
-    // If Google Chrome is managed on this machine we'll show the same
-    // configured policies in chrome://policy/.
-    CefString(&settings.chrome_policy_id) =
-#if defined(OS_WIN)
-        "SOFTWARE\\Policies\\Google\\Chrome";
-#elif defined(OS_MAC)
-        "com.google.Chrome";
-#elif defined(OS_LINUX)
-        "/etc/opt/chrome/policies";
-#else
-        "";
-#endif
-  }
   return settings;
 }
 
@@ -231,15 +153,10 @@ void MainContextImpl::PopulateBrowserSettings(CefBrowserSettings* settings) {
     settings->background_color = browser_background_color_;
   }
 
-  if (command_line_->HasSwitch(switches::kHideChromeBubbles)) {
-    settings->chrome_status_bubble = STATE_DISABLED;
-    settings->chrome_zoom_bubble = STATE_DISABLED;
-  }
 }
 
 void MainContextImpl::PopulateOsrSettings(OsrRendererSettings* settings) {
-  settings->show_update_rect =
-      command_line_->HasSwitch(switches::kShowUpdateRect);
+  settings->show_update_rect = false;
 
   settings->shared_texture_enabled = shared_texture_enabled_;
   settings->external_begin_frame_enabled = external_begin_frame_enabled_;
@@ -269,8 +186,7 @@ bool MainContextImpl::Initialize(const CefMainArgs& args,
 
   // Need to create the RootWindowManager after calling CefInitialize because
   // TempWindowX11 uses cef_get_xdisplay().
-  root_window_manager_ =
-      std::make_unique<RootWindowManager>(terminate_when_all_windows_closed_);
+  root_window_manager_ = std::make_unique<RootWindowManager>(terminate_when_all_windows_closed_);
 
   initialized_ = true;
 

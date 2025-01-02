@@ -37,7 +37,7 @@ class ClientRequestContextHandler : public CefRequestContextHandler {
     // For example, via Tests > New Popup from the top menu. This applies for
     // for Chrome style only.
     const auto& startup_url =
-        MainContext::Get()->GetMainURL(/*command_line=*/nullptr);
+        MainContext::Get()->GetMainURL();
     request_context->SetContentSetting(startup_url, startup_url,
                                        CEF_CONTENT_SETTING_TYPE_POPUPS,
                                        CEF_CONTENT_SETTING_VALUE_ALLOW);

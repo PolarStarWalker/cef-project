@@ -38,7 +38,7 @@ class MainContext {
   virtual std::string GetAppWorkingDirectory() = 0;
 
   // Returns the main application URL based on |command_line| and global state.
-  virtual std::string GetMainURL(CefRefPtr<CefCommandLine> command_line) = 0;
+  virtual std::string GetMainURL() = 0;
 
   // Returns the background color.
   virtual cef_color_t GetBackgroundColor() = 0;
