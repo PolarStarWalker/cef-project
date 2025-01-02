@@ -41,10 +41,9 @@ namespace client {
 namespace {
 
 std::wstring GetOptions() {
-  constexpr std::wstring_view cmd_options =
-      L"--external-message-pump --off-screen-rendering-enabled "
-      L"--shared-texture-enabled --enable-gpu";
-  constexpr std::wstring_view filename = L"cefclient.exe";
+  static constexpr std::wstring_view cmd_options =
+      L"--external-message-pump --off-screen-rendering-enabled --shared-texture-enabled --enable-gpu";
+  static constexpr std::wstring_view filename = L"cefclient.exe";
   auto str = (std::filesystem::current_path() / filename.data()).wstring();
   str += L" ";
   str += cmd_options.data();
@@ -114,7 +113,7 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
 
   // Run the message loop. This will block until Quit() is called by the
   // RootWindowManager after all windows have been destroyed.
-  int result = message_loop->Run();
+  const auto result = message_loop->Run();
 
   // Shut down CEF.
   context->Shutdown();
@@ -130,10 +129,7 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
 }  // namespace client
 
 // Program entry point function.
-int APIENTRY wWinMain(HINSTANCE hInstance,
-                      HINSTANCE hPrevInstance,
-                      LPTSTR lpCmdLine,
-                      int nCmdShow) {
+int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow) {
   UNREFERENCED_PARAMETER(hPrevInstance);
   UNREFERENCED_PARAMETER(lpCmdLine);
 
