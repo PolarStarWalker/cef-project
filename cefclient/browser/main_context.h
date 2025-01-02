@@ -57,7 +57,7 @@ class MainContext {
   virtual bool UseDefaultPopup() = 0;
 
   // Populate |settings| based on command-line arguments.
-  virtual void PopulateSettings(CefSettings* settings) = 0;
+  virtual CefSettings PopulateSettings() = 0;
   virtual void PopulateBrowserSettings(CefBrowserSettings* settings) = 0;
   virtual void PopulateOsrSettings(OsrRendererSettings* settings) = 0;
 

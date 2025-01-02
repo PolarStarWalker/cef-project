@@ -4,15 +4,16 @@
 
 #include <windows.h>
 
+#include <filesystem>
 #include <memory>
 
-#include "include/cef_command_line.h"
-#include "include/cef_sandbox_win.h"
 #include "cefclient/browser/main_context_impl.h"
 #include "cefclient/browser/main_message_loop_multithreaded_win.h"
 #include "cefclient/browser/resource.h"
 #include "cefclient/browser/root_window_manager.h"
 #include "cefclient/browser/test_runner.h"
+#include "include/cef_command_line.h"
+#include "include/cef_sandbox_win.h"
 #include "shared/browser/client_app_browser.h"
 #include "shared/browser/main_message_loop_external_pump.h"
 #include "shared/browser/main_message_loop_std.h"
@@ -39,6 +40,17 @@
 namespace client {
 namespace {
 
+std::wstring GetOptions() {
+  constexpr std::wstring_view cmd_options =
+      L"--external-message-pump --off-screen-rendering-enabled "
+      L"--shared-texture-enabled --enable-gpu";
+  constexpr std::wstring_view filename = L"cefclient.exe";
+  auto str = (std::filesystem::current_path() / filename.data()).wstring();
+  str += L" ";
+  str += cmd_options.data();
+  return str;
+}
+
 int RunMain(HINSTANCE hInstance, int nCmdShow) {
   CefMainArgs main_args(hInstance);
 
@@ -53,21 +65,14 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
 
   // Parse command-line arguments.
   CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
-  command_line->InitFromString(::GetCommandLineW());
+  const auto str = GetOptions();
+  command_line->InitFromString(str);
 
   // Create a ClientApp of the correct type.
-  CefRefPtr<CefApp> app;
-  ClientApp::ProcessType process_type = ClientApp::GetProcessType(command_line);
-  if (process_type == ClientApp::BrowserProcess) {
-    app = new ClientAppBrowser();
-  } else if (process_type == ClientApp::RendererProcess) {
-    app = new ClientAppRenderer();
-  } else if (process_type == ClientApp::OtherProcess) {
-    app = new ClientAppOther();
-  }
+  CefRefPtr<CefApp> app{new ClientAppBrowser()};
 
   // Execute the secondary process, if any.
-  int exit_code = CefExecuteProcess(main_args, app, sandbox_info);
+  const auto exit_code = CefExecuteProcess(main_args, app, sandbox_info);
   if (exit_code >= 0) {
     return exit_code;
   }
@@ -75,14 +80,12 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
   // Create the main context object.
   auto context = std::make_unique<MainContextImpl>(command_line, true);
 
-  CefSettings settings;
+  // Populate the settings based on command line arguments.
+  auto settings = context->PopulateSettings();
 
 #if !defined(CEF_USE_SANDBOX)
   settings.no_sandbox = true;
 #endif
-
-  // Populate the settings based on command line arguments.
-  context->PopulateSettings(&settings);
 
   // Set the ID for the ICON resource that will be loaded from the main
   // executable and used when creating default Chrome windows such as DevTools
@@ -90,14 +93,7 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
   settings.chrome_app_icon_id = IDR_MAINFRAME;
 
   // Create the main message loop object.
-  std::unique_ptr<MainMessageLoop> message_loop;
-  if (settings.multi_threaded_message_loop) {
-    message_loop = std::make_unique<MainMessageLoopMultithreadedWin>();
-  } else if (settings.external_message_pump) {
-    message_loop = MainMessageLoopExternalPump::Create();
-  } else {
-    message_loop = std::make_unique<MainMessageLoopStd>();
-  }
+  auto message_loop = MainMessageLoopExternalPump::Create();
 
   // Initialize the CEF browser process. May return false if initialization
   // fails or if early exit is desired (for example, due to process singleton
@@ -110,10 +106,8 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
   test_runner::RegisterSchemeHandlers();
 
   auto window_config = std::make_unique<RootWindowConfig>();
-  window_config->always_on_top =
-      command_line->HasSwitch(switches::kAlwaysOnTop);
-  window_config->with_osr =
-      settings.windowless_rendering_enabled ? true : false;
+  window_config->always_on_top = false;
+  window_config->with_osr = true;
 
   // Create the first window.
   context->GetRootWindowManager()->CreateRootWindow(std::move(window_config));

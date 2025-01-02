@@ -18,7 +18,7 @@ namespace client {
 namespace {
 
 // The default URL to load in a browser window.
-const char kDefaultUrl[] = "https://www.google.com";
+const char kDefaultUrl[] = "https://polaruv.tech";
 
 // Returns the ARGB value for |color|.
 cef_color_t ParseColor(const std::string& color) {
@@ -185,23 +185,23 @@ bool MainContextImpl::UseDefaultPopup() {
          command_line_->HasSwitch(switches::kUseDefaultPopup);
 }
 
-void MainContextImpl::PopulateSettings(CefSettings* settings) {
-  client::ClientAppBrowser::PopulateSettings(command_line_, *settings);
+CefSettings MainContextImpl::PopulateSettings() {
+  CefSettings settings = ClientAppBrowser::PopulateSettings(command_line_);
 
-  CefString(&settings->cache_path) =
+  CefString(&settings.cache_path) =
       command_line_->GetSwitchValue(switches::kCachePath);
 
   if (use_windowless_rendering_) {
-    settings->windowless_rendering_enabled = true;
+    settings.windowless_rendering_enabled = true;
   }
 
   if (browser_background_color_ != 0) {
-    settings->background_color = browser_background_color_;
+    settings.background_color = browser_background_color_;
   }
 
   if (command_line_->HasSwitch("lang")) {
     // Use the same locale for the Accept-Language HTTP request header.
-    CefString(&settings->accept_language_list) =
+    CefString(&settings.accept_language_list) =
         command_line_->GetSwitchValue("lang");
   }
 
@@ -210,7 +210,7 @@ void MainContextImpl::PopulateSettings(CefSettings* settings) {
     // Use the same configuration ID as Google Chrome for testing purposes.
     // If Google Chrome is managed on this machine we'll show the same
     // configured policies in chrome://policy/.
-    CefString(&settings->chrome_policy_id) =
+    CefString(&settings.chrome_policy_id) =
 #if defined(OS_WIN)
         "SOFTWARE\\Policies\\Google\\Chrome";
 #elif defined(OS_MAC)
@@ -221,6 +221,7 @@ void MainContextImpl::PopulateSettings(CefSettings* settings) {
         "";
 #endif
   }
+  return settings;
 }
 
 void MainContextImpl::PopulateBrowserSettings(CefBrowserSettings* settings) {

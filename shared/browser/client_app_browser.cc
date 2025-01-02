@@ -16,8 +16,10 @@ ClientAppBrowser::ClientAppBrowser() {
 }
 
 // static
-void ClientAppBrowser::PopulateSettings(CefRefPtr<CefCommandLine> command_line,
-                                        CefSettings& settings) {
+CefSettings ClientAppBrowser::PopulateSettings(
+    CefRefPtr<CefCommandLine> command_line) {
+  CefSettings settings;
+
 #if (defined(OS_WIN) || defined(OS_LINUX))
   settings.multi_threaded_message_loop =
       command_line->HasSwitch(client::switches::kMultiThreadedMessageLoop);
@@ -40,6 +42,7 @@ void ClientAppBrowser::PopulateSettings(CefRefPtr<CefCommandLine> command_line,
     }
     CefString(&settings.cookieable_schemes_list) = list_str;
   }
+  return settings;
 }
 
 void ClientAppBrowser::OnBeforeCommandLineProcessing(
