@@ -69,16 +69,6 @@ set(CEFCLIENT_BROWSER_BROWSER_SRCS
   browser/test_runner.h
   browser/urlrequest_test.cc
   browser/urlrequest_test.h
-  browser/views_menu_bar.cc
-  browser/views_menu_bar.h
-  browser/views_overlay_browser.cc
-  browser/views_overlay_browser.h
-  browser/views_overlay_controls.cc
-  browser/views_overlay_controls.h
-  browser/views_style.cc
-  browser/views_style.h
-  browser/views_window.cc
-  browser/views_window.h
   browser/window_test.cc
   browser/window_test.h
   browser/window_test_runner.cc
