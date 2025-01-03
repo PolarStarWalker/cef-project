@@ -1017,7 +1017,7 @@ bool ClientHandler::OnOpenURLFromTab(
       target_disposition == CEF_WOD_NEW_FOREGROUND_TAB) {
     // Handle middle-click and ctrl + left-click by opening the URL in a new
     // browser window.
-    auto config = std::make_unique<RootWindowConfig>(MainContext::Get()->GetCommandLine());
+    auto config = std::make_unique<RootWindowConfig>();
     config->with_controls = with_controls_;
     config->with_osr = is_osr_;
     config->url = target_url;
@@ -1259,7 +1259,7 @@ void ClientHandler::ShowSSLInformation(CefRefPtr<CefBrowser> browser) {
 
   ss << "</body></html>";
 
-  auto config = std::make_unique<RootWindowConfig>(MainContext::Get()->GetCommandLine());
+  auto config = std::make_unique<RootWindowConfig>();
   config->with_controls = false;
   config->with_osr = is_osr_;
   config->url = test_runner::GetDataURI(ss.str(), "text/html");

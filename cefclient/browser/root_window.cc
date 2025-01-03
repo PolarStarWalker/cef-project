@@ -11,9 +11,8 @@
 
 namespace client {
 
-RootWindowConfig::RootWindowConfig(CefRefPtr<CefCommandLine> cmd)
-    : command_line(cmd ),
-      use_views(MainContext::Get()->UseViewsGlobal()),
+RootWindowConfig::RootWindowConfig()
+    : use_views(MainContext::Get()->UseViewsGlobal()),
       use_alloy_style(MainContext::Get()->UseAlloyStyleGlobal()),
       with_controls(true),
       url(MainContext::Get()->GetMainURL()) {}
