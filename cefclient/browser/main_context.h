@@ -25,9 +25,6 @@ class MainContext {
   // Returns the singleton instance of this object.
   static MainContext* Get();
 
-  // Returns the global command-line.
-  virtual CefRefPtr<CefCommandLine> GetCommandLine() = 0;
-
   // Returns the full path to the console log file.
   virtual std::string GetConsoleLogPath() = 0;
 

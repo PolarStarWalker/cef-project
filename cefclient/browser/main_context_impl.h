@@ -19,11 +19,9 @@ namespace client {
 // Used to store global context in the browser process.
 class MainContextImpl : public MainContext {
  public:
-  MainContextImpl(CefRefPtr<CefCommandLine> command_line,
-                  bool terminate_when_all_windows_closed);
+  explicit MainContextImpl(bool terminate_when_all_windows_closed);
 
   // MainContext members.
-  CefRefPtr<CefCommandLine> GetCommandLine() override;
   std::string GetConsoleLogPath() override;
   std::string GetDownloadPath(const std::string& file_name) override;
   std::string GetAppWorkingDirectory() override;

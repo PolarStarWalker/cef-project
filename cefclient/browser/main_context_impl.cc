@@ -41,10 +41,8 @@ cef_color_t ParseColor(const std::string& color) {
 
 }  // namespace
 
-MainContextImpl::MainContextImpl(CefRefPtr<CefCommandLine> command_line, bool terminate_when_all_windows_closed)
-    : command_line_(command_line), terminate_when_all_windows_closed_(terminate_when_all_windows_closed) {
-  DCHECK(command_line_.get());
-
+MainContextImpl::MainContextImpl(bool terminate_when_all_windows_closed)
+    : terminate_when_all_windows_closed_(terminate_when_all_windows_closed) {
   // Whether windowless (off-screen) rendering will be used.
   use_windowless_rendering_ = true;
 
@@ -98,10 +96,6 @@ MainContextImpl::~MainContextImpl() {
   // The context must either not have been initialized, or it must have also
   // been shut down.
   DCHECK(!initialized_ || shutdown_);
-}
-
-CefRefPtr<CefCommandLine> MainContextImpl::GetCommandLine() {
-  return command_line_;
 }
 
 std::string MainContextImpl::GetConsoleLogPath() {

@@ -40,16 +40,6 @@
 namespace client {
 namespace {
 
-std::wstring GetOptions() {
-  static constexpr std::wstring_view cmd_options =
-      L"--external-message-pump --off-screen-rendering-enabled --shared-texture-enabled --enable-gpu";
-  static constexpr std::wstring_view filename = L"cefclient.exe";
-  auto str = (std::filesystem::current_path() / filename.data()).wstring();
-  str += L" ";
-  str += cmd_options.data();
-  return str;
-}
-
 int RunMain(HINSTANCE hInstance, int nCmdShow) {
   CefMainArgs main_args(hInstance);
 
@@ -62,11 +52,6 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
   sandbox_info = scoped_sandbox.sandbox_info();
 #endif
 
-  // Parse command-line arguments.
-  CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
-  const auto str = GetOptions();
-  command_line->InitFromString(str);
-
   // Create a ClientApp of the correct type.
   CefRefPtr<CefApp> app{new ClientAppBrowser()};
 
@@ -77,7 +62,7 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
   }
 
   // Create the main context object.
-  auto context = std::make_unique<MainContextImpl>(command_line, true);
+  auto context = std::make_unique<MainContextImpl>(true);
 
   // Populate the settings based on command line arguments.
   auto settings = context->PopulateSettings();
