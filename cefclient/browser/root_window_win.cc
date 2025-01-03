@@ -14,7 +14,6 @@
 #include "include/cef_app.h"
 #include "include/views/cef_display.h"
 #include "cefclient/browser/browser_window_osr_win.h"
-#include "cefclient/browser/browser_window_std_win.h"
 #include "cefclient/browser/client_prefs.h"
 #include "cefclient/browser/main_context.h"
 #include "cefclient/browser/resource.h"
@@ -316,15 +315,10 @@ bool RootWindowWin::WithWindowlessRendering() const {
 }
 
 void RootWindowWin::CreateBrowserWindow(const std::string& startup_url) {
-  if (with_osr_) {
-    OsrRendererSettings settings = {};
-    MainContext::Get()->PopulateOsrSettings(&settings);
-    browser_window_ = std::make_unique<BrowserWindowOsrWin>(
-        this, with_controls_, startup_url, settings);
-  } else {
-    browser_window_ = std::make_unique<BrowserWindowStdWin>(
-        this, with_controls_, startup_url);
-  }
+  OsrRendererSettings settings = {};
+  MainContext::Get()->PopulateOsrSettings(&settings);
+  browser_window_ = std::make_unique<BrowserWindowOsrWin>(
+      this, with_controls_, startup_url, settings);
 }
 
 void RootWindowWin::CreateRootWindow(const CefBrowserSettings& settings,

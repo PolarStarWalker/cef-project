@@ -267,8 +267,6 @@ source_group(cefclient FILES ${CEFCLIENT_WINDOWS_SRCS})
 set(CEFCLIENT_WINDOWS_BROWSER_SRCS
   browser/browser_window_osr_win.cc
   browser/browser_window_osr_win.h
-  browser/browser_window_std_win.cc
-  browser/browser_window_std_win.h
   browser/main_context_impl_win.cc
   browser/main_message_loop_multithreaded_win.cc
   browser/main_message_loop_multithreaded_win.h

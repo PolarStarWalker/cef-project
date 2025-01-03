@@ -104,7 +104,7 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
   // Register scheme handlers.
   test_runner::RegisterSchemeHandlers();
 
-  auto window_config = std::make_unique<RootWindowConfig>();
+  auto window_config = std::make_unique<RootWindowConfig>(command_line);
   window_config->always_on_top = false;
   window_config->with_osr = true;
 
