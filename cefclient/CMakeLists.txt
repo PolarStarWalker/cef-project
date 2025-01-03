@@ -58,8 +58,6 @@ set(CEFCLIENT_BROWSER_BROWSER_SRCS
   browser/root_window_create.cc
   browser/root_window_manager.cc
   browser/root_window_manager.h
-  browser/root_window_views.cc
-  browser/root_window_views.h
   browser/scheme_test.cc
   browser/scheme_test.h
   browser/server_test.cc
@@ -85,8 +83,6 @@ set(CEFCLIENT_BROWSER_BROWSER_SRCS
   browser/window_test.h
   browser/window_test_runner.cc
   browser/window_test_runner.h
-  browser/window_test_runner_views.cc
-  browser/window_test_runner_views.h
   )
 source_group(cefclient\\\\browser FILES ${CEFCLIENT_BROWSER_BROWSER_SRCS})
 

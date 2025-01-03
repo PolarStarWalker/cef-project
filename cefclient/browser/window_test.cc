@@ -15,7 +15,6 @@
 #include "cefclient/browser/main_context.h"
 #include "cefclient/browser/test_runner.h"
 #include "cefclient/browser/window_test_runner.h"
-#include "cefclient/browser/window_test_runner_views.h"
 
 #if defined(OS_WIN)
 #include "cefclient/browser/window_test_runner_win.h"
@@ -38,13 +37,7 @@ const char kMessageFullscreenName[] = "WindowTest.Fullscreen";
 const char kMessageTitlebarHeightName[] = "WindowTest.TitlebarHeight";
 
 // Create the appropriate platform test runner object.
-std::unique_ptr<WindowTestRunner> CreateWindowTestRunner(
-    CefRefPtr<CefBrowser> browser) {
-  if (CefBrowserView::GetForBrowser(browser)) {
-    // Browser is Views-hosted.
-    return std::make_unique<WindowTestRunnerViews>();
-  }
-
+std::unique_ptr<WindowTestRunner> CreateWindowTestRunner() {
 #if defined(OS_WIN)
   return std::make_unique<WindowTestRunnerWin>();
 #elif defined(OS_LINUX)
@@ -99,7 +92,7 @@ class Handler : public CefMessageRouterBrowserSide::Handler {
       return false;
     }
 
-    auto runner = CreateWindowTestRunner(browser);
+    auto runner = CreateWindowTestRunner();
 
     const std::string& message_name = request;
     if (message_name.find(kMessagePositionName) == 0) {

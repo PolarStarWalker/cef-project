@@ -3,7 +3,6 @@
 // can be found in the LICENSE file.
 
 #include "cefclient/browser/root_window.h"
-#include "cefclient/browser/root_window_views.h"
 
 #if defined(OS_WIN)
 #include "cefclient/browser/root_window_win.h"
@@ -18,10 +17,6 @@ namespace client {
 // static
 scoped_refptr<RootWindow> RootWindow::Create(bool use_views,
                                              bool use_alloy_style) {
-  if (use_views) {
-    return new RootWindowViews(use_alloy_style);
-  }
-
 #if defined(OS_WIN)
   return new RootWindowWin(use_alloy_style);
 #elif defined(OS_LINUX)
