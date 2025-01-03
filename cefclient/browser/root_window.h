@@ -36,7 +36,7 @@ struct RootWindowConfig {
   // |command_line| will be non-nullptr when used for new window creation via
   // OnAlreadyRunningAppRelaunch. Otherwise, the global command-line will be
   // used.
-  explicit RootWindowConfig(CefRefPtr<CefCommandLine> command_line = nullptr);
+  explicit RootWindowConfig(CefRefPtr<CefCommandLine> command_line);
 
   // Associated command-line.
   CefRefPtr<CefCommandLine> command_line;

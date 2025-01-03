@@ -6,12 +6,13 @@
 
 #include <memory>
 
+#include "cefclient/browser/client_handler_std.h"
+#include "cefclient/browser/client_prefs.h"
 #include "include/base/cef_build.h"
 #include "include/base/cef_callback.h"
 #include "include/cef_app.h"
 #include "include/wrapper/cef_helpers.h"
-#include "cefclient/browser/client_handler_std.h"
-#include "cefclient/browser/client_prefs.h"
+#include "main_context.h"
 
 namespace client {
 
@@ -75,7 +76,7 @@ void RootWindowViews::InitAsPopup(RootWindow::Delegate* delegate,
   delegate_ = delegate;
 
   DCHECK(!config_);
-  config_ = std::make_unique<RootWindowConfig>();
+  config_ = std::make_unique<RootWindowConfig>(MainContext::Get()->GetCommandLine());
   config_->use_views = true;
   config_->use_alloy_style = IsAlloyStyle();
   config_->with_controls = with_controls;

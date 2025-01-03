@@ -12,10 +12,10 @@
 namespace client {
 
 RootWindowConfig::RootWindowConfig(CefRefPtr<CefCommandLine> cmd)
-    : command_line(cmd ? cmd : MainContext::Get()->GetCommandLine()),
+    : command_line(cmd ),
       use_views(MainContext::Get()->UseViewsGlobal()),
       use_alloy_style(MainContext::Get()->UseAlloyStyleGlobal()),
-      with_controls(!command_line->HasSwitch(switches::kHideControls)),
+      with_controls(true),
       url(MainContext::Get()->GetMainURL()) {}
 
 RootWindow::RootWindow(bool use_alloy_style)

@@ -46,7 +46,7 @@ bool DefaultClientHandler::OnBeforePopup(
   }
 
   // Used to configure default values.
-  RootWindowConfig config(/*command_line=*/nullptr);
+  RootWindowConfig config(MainContext::Get()->GetCommandLine());
 
   // Potentially create a new RootWindow for the popup browser that will be
   // created asynchronously.

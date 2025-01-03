@@ -136,7 +136,7 @@ void RunRequestTest(CefRefPtr<CefBrowser> browser) {
 }
 
 void RunNewWindowTest(CefRefPtr<CefBrowser> browser) {
-  auto config = std::make_unique<RootWindowConfig>();
+  auto config = std::make_unique<RootWindowConfig>(MainContext::Get()->GetCommandLine());
   config->with_controls = true;
   config->with_osr = browser->GetHost()->IsWindowRenderingDisabled();
   MainContext::Get()->GetRootWindowManager()->CreateRootWindow(
@@ -155,7 +155,7 @@ void RunDialogWindowTest(CefRefPtr<CefBrowser> browser) {
     return;
   }
 
-  auto config = std::make_unique<RootWindowConfig>();
+  auto config = std::make_unique<RootWindowConfig>(MainContext::Get()->GetCommandLine());
   config->window_type = WindowType::DIALOG;
   config->parent_window = browser_view->GetWindow();
   MainContext::Get()->GetRootWindowManager()->CreateRootWindow(
